@@ -23,7 +23,7 @@ app.post('/scratch-file', (req, res)=>{
 
     //把base64数据写入文件：https://cloud.tencent.com/developer/ask/61089
     var base64Data = req.body.fileData.replace("data:application/x.scratch.sb3;base64,", "");
-    var binaryData = new Buffer(base64Data, 'base64').toString('binary');
+    var binaryData = new Buffer.from(base64Data, 'base64').toString('binary');
     fs.writeFile(req.body.fileName, binaryData, "binary", function(err) {
         if(err){
             throw err;

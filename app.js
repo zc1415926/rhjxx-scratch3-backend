@@ -1,5 +1,6 @@
 let express = require('express');
 let bodyParser = require('body-parser');
+let fs = require('fs');
 
 var app = express()
     .use(bodyParser.json());
@@ -23,11 +24,21 @@ app.get('/', (req, res)=>{
 })
 
 app.post('/scratch-file', (req, res)=>{
-    //这里的req.body需要body-parser中间件
-    let resInfo = 'File ' + req.body.fileName 
-                + ' received, data: ' + req.body.data;
+    //这里的req.body需要body-parser中间件，req.body.fileData是sb3文件的实际base64数据。
+    // console.log(req.body.fileData)
 
-    res.status(200).send(resInfo);
+    //把base64数据写入文件，https://cloud.tencent.com/developer/ask/61089
+    var base64Data = req.body.fileData.replace("data:application/x.scratch.sb3;base64,", "");
+    var binaryData = new Buffer(base64Data, 'base64').toString('binary');
+    fs.writeFile(req.body.fileName, binaryData, "binary", function(err) {
+        if(err){
+            throw err;
+        }
+
+        //TODO:写入文件后测试写入是否成功
+    });
+
+    res.status(200).send('done');
 })
 
 let server = app.listen(2222, ()=>{
